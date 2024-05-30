@@ -2,6 +2,9 @@
 
 This simulation models a gas station and the process of refuelling cars and the station's fuel tank. It uses the SimPy library for process-based discrete-event simulation.
 
+![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/f87605dc-336c-4d6e-9763-31c665a6d81c)
+
+
 ## How it works
 
 The simulation includes the following entities:
