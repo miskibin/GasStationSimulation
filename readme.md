@@ -2,6 +2,9 @@
 
 This simulation models a gas station and the process of refuelling cars and the station's fuel tank. It uses the SimPy library for process-based discrete-event simulation.
 
+![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/f87605dc-336c-4d6e-9763-31c665a6d81c)
+
+
 ## How it works
 
 The simulation includes the following entities:
@@ -16,17 +19,3 @@ The simulation runs for a specified amount of time. During this time, it logs ev
 
 At the end of the simulation, it plots the fuel level at the gas station over time.
 
-## Requirements
-
-- Python 3.6+
-- SimPy
-- Matplotlib
-- Rich
-
-## Running the Simulation
-
-To run the simulation, simply execute the `main.py` script:
-
-```bash
-python main.py
-```
