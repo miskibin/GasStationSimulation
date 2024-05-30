@@ -19,17 +19,3 @@ The simulation runs for a specified amount of time. During this time, it logs ev
 
 At the end of the simulation, it plots the fuel level at the gas station over time.
 
-## Requirements
-
-- Python 3.6+
-- SimPy
-- Matplotlib
-- Rich
-
-## Running the Simulation
-
-To run the simulation, simply execute the `main.py` script:
-
-```bash
-python main.py
-```
