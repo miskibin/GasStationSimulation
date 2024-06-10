@@ -1,3 +1,7 @@
 simpy
 matplotlib
 rich
+loguru
+networkx
+pydantic
+fastapi
