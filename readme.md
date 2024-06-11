@@ -48,7 +48,7 @@ This simulation provides valuable insights into the logistics of fuel management
 
 ## Architecture
 
-```{mermaid}
+```mermaid
 classDiagram
   class Entity {
     +x: int
