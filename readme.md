@@ -1,48 +1,102 @@
-### Gas Station Refueling:
+### Gas Station Simulator
+
+
+### Formal Description of the Gas Station Refueling Simulation
 
 **Overview:**
 
-This enhanced simulation meticulously models the operations of a gas station, illustrating the complex interplay between vehicle refueling demands and the logistical challenges of fuel supply. It provides a realistic scenario of managing fuel pumps, queues of vehicles, and a centrally shared fuel resource, introducing the element of time delays in fuel resupply.
+The gas station refueling simulation models a dynamic system comprising multiple fuel stations, a central refueling center, and a tanker that manages fuel distribution. The simulation aims to optimize fuel logistics by ensuring that each station maintains sufficient fuel levels to serve incoming vehicles efficiently while minimizing the tanker's travel and operational costs.
 
-**Simulation Components and Dynamics:**
+**Components of the Simulation:**
 
-1. **Fuel Dispensers:** The station features `P` fuel pumps, each dedicated to servicing a line of vehicles. Each pump operates independently but accesses fuel from a common source.
+1. **Fuel Stations:**
+   - Each station is characterized by its geographical coordinates and a specified fuel capacity.
+   - Stations have a queue of vehicles, each requiring a certain amount of fuel.
+   - Stations monitor their fuel levels and request refueling from the tanker when the fuel level drops below a specified threshold.
 
-2. **Central Fuel Repository:** A central fuel tank, with a capacity of `Q` liters, supplies all the pumps. The size of the tank is strategically determined based on the number of pumps and anticipated vehicle traffic.
+2. **Tanker:**
+   - The tanker is tasked with refueling stations from a central refuel center.
+   - It has a finite fuel capacity and must return to the refuel center to replenish its own fuel supply, especially when its load falls below 20% of its capacity.
+   - The tanker follows a designated route to deliver fuel efficiently to the stations in need. It can service only one station at a time and will ignore new requests while en route.
 
-3. **Vehicle Fuel Demand:** Vehicles arrive with a variable fuel requirement, `F + rand()`, where `F` represents a base fuel need, and `rand()` introduces a random fluctuation to simulate diverse fuel consumption patterns among different vehicles.
+3. **Refuel Center:**
+   - Located centrally within the simulation area, the refuel center maintains an infinite supply of fuel.
+   - It serves as the primary source from which the tanker refills its fuel load.
 
-4. **Fuel Consumption Dynamics:** As vehicles receive fuel, the central tank's level decreases. This consumption reflects real-time depletion of resources, challenging the station's operational capabilities.
+**Operational Dynamics:**
 
-5. **Resupply Logistics and Delays:** When the fuel level falls below 20% of the tank’s capacity (`Q/5`), a resupply signal is sent out. However, the arrival of the resupply tanker, which delivers `R` liters of fuel, is not immediate. There is a realistic delay in tanker arrival, which adds a critical layer of complexity to managing the available fuel resource efficiently.
+- The simulation progresses in discrete steps. Each step involves the tanker moving towards its target, delivering fuel, or returning to the refuel center for refueling.
+- Fuel stations process their vehicle queues continuously, providing fuel to vehicles based on availability and queue priority.
+- Upon reaching critical fuel levels, stations send a refueling request to the tanker. If the tanker is available (not servicing another station or en route), it will set the requesting station as its next target.
+- If the tanker’s fuel load is critically low, it prioritizes returning to the refuel center over responding to station requests.
 
-6. **Simulation Objective:** The primary goal is to optimize the flow of vehicles and fuel management, ensuring that the station operates efficiently, even during peak demand periods and considering the delay in fuel resupply.
+**Objective:**
 
-**Mathematical Overview of the Discrete Simulation:**
+The primary objective of the simulation is to manage fuel logistics efficiently. This includes:
+- Minimizing the waiting time for vehicles at fuel stations.
+- Reducing the travel distance and time of the tanker, thus saving on fuel costs and improving service efficiency.
+- Ensuring that no station runs out of fuel, which could disrupt service and affect customer satisfaction.
 
-This simulation can be described mathematically as a discrete event system where the state changes are driven by specific events:
+**Metrics for Evaluation:**
 
-- **Event Types:**
-  1. **Vehicle Arrival:** Occurs randomly but can be modeled using a Poisson distribution to simulate arrival times.
-  2. **Fueling Start:** A vehicle starts refueling once it reaches the pump.
-  3. **Fueling End:** The refueling process completes, and the vehicle departs.
-  4. **Resupply Request:** Triggered when fuel level reaches `Q/5`.
-  5. **Resupply Completion:** Occurs after a delay following the resupply request. This delay can be modeled as a fixed time or a variable based on external factors.
+- Average waiting time per vehicle across all stations.
+- Total fuel delivered by the tanker versus the fuel consumed in travel.
+and return trips to the refuel center.
+- Frequency of stations running out of fuel.
 
-- **State Variables:**
-  1. **Fuel Level in Tank (`Fuel_t`):** Changes with each vehicle's fueling and upon tanker refueling.
-  2. **Queue Length at Each Pump (`Queue_p`):** Increases with vehicle arrivals and decreases as vehicles are refueled and leave.
-  3. **Tanker Status (`Tanker_s`):** Represents whether the tanker is en route, refueling, or idle.
+This simulation provides valuable insights into the logistics of fuel management in a controlled environment, allowing for strategic planning and operational adjustments to enhance real-world fuel distribution networks.
 
-- **Parameters:**
-  1. **`P`:** Number of pumps.
-  2. **`Q`:** Initial fuel quantity in the central tank.
-  3. **`F`:** Base amount of fuel required by each vehicle.
-  4. **`R`:** Amount of fuel delivered by the resupply tanker.
+## Architecture
 
-- **Differential Equations/Update Rules:**
-  - **Fuel Level Update:** `Fuel_t = Fuel_t - (sum of fuel demands of vehicles being serviced) + (fuel added if tanker refuels)`.
-  - **Queue Dynamics:** `Queue_p = Queue_p + (new arrivals) - (vehicles serviced)`.
-  - **Tanker Dispatch and Arrival:** Tanker status updates based on fuel level triggers and completion of refueling.
+```{mermaid}
+classDiagram
+  class Entity {
+    +x: int
+    +y: int
+    +name: str
+    +distance_to(other: Entity): float
+  }
+  class Station {
+    +fueling_speed: int
+    +capacity: int
+    +current_fuel: int
+    +fuel_alert_level: int
+    +vehicles: list[Vehicle]
+    +is_refueling_car: bool
+    +environment: Environment
+    +request_fuel()
+    +add_fuel(amount: int)
+    +process_queue()
+  }
+  class Vehicle {
+    +fuel_need: int
+    +refuel(amount: int)
+  }
+  class Tanker {
+    +capacity: int
+    +current_load: int
+    +target_station: Station
+    +load_fuel(amount: int)
+    +needs_refuel(): bool
+    +deliver_fuel(tank_station: Station)
+    +move_to(destination: Entity)
+  }
+  class Environment {
+    +stations: list[Station]
+    +tanker: Tanker
+    +refuel_center: Entity
+    +register_station(tank_station: Station)
+    +notify(station: Station)
+    +update()
+    +animate(i: int)
+    +run_simulation(steps: int)
+    +state_as_model(): EnvironmentModel
+  }
+  Entity <|-- Station
+  Entity <|-- Tanker
+  Environment o-- Station
+  Environment o-- Tanker
+  Station o-- Vehicle
+  Tanker o-- Station
+```
 
-This mathematical framework helps simulate and analyze the operations to derive optimal management strategies, taking into account both regular operations and unexpected delays in resupply, providing valuable insights for real-world applications.
