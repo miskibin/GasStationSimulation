@@ -89,6 +89,7 @@ class Environment:
                     y=station.y,
                     capacity=station.capacity,
                     current_fuel=station.current_fuel,
+                    is_refueling_car=station.is_refueling_car,
                 )
                 for station in self.stations
             ],

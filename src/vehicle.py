@@ -8,7 +8,7 @@ class Tanker(Entity):
         super().__init__(x, y, "Tanker")
         self.logger = logger
         self.capacity = capacity
-        self.current_load = 1000  # Initial load at full capacity for simplicity
+        self.current_load = 2000  # Initial load at full capacity for simplicity
         self.target_station = None
 
     def load_fuel(self, amount):

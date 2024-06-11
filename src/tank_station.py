@@ -11,6 +11,7 @@ class Station(Entity):
         self.current_fuel = capacity
         self.fuel_alert_level = capacity / 5
         self.vehicles = []
+        self.is_refueling_car = False
         self.environment = (
             None  # This will be set when the station is registered with the environment
         )
@@ -26,9 +27,11 @@ class Station(Entity):
         )
 
     def process_queue(self):
-        if np.random.rand() < 0.2:
+        self.is_refueling_car = False
+        if np.random.rand() < 0.5:
             return
         if self.vehicles and self.current_fuel > 0:
+            self.is_refueling_car = True
             vehicle = self.vehicles[0]  # Check the first vehicle without removing it
             required_fuel = min(
                 vehicle.fuel_need, self.current_fuel, self.fueling_speed
