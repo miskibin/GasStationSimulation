@@ -48,7 +48,7 @@ This simulation provides valuable insights into the logistics of fuel management
 
 ## Architecture
 
-```{mermaid}
+```mermaid
 classDiagram
   class Entity {
     +x: int
@@ -99,4 +99,5 @@ classDiagram
   Station o-- Vehicle
   Tanker o-- Station
 ```
+![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/15ec58e3-0481-416d-b5a3-2c11e524a689)
 
