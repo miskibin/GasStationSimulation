@@ -34,6 +34,7 @@ ENVIRONMENT = Environment()
 ENVIRONMENT.register_station(Station(10, 10, 800, 15))
 ENVIRONMENT.register_station(Station(-10, -10, 700, 24))
 ENVIRONMENT.register_station(Station(20, -20, 900, 17))
+# ENVIRONMENT.register_station(Station(13, -14, 900, 17))
 
 # Add vehicles
 for station in ENVIRONMENT.stations:
