@@ -21,7 +21,13 @@ class Tanker(Entity):
         return self.current_load < self.capacity * 0.2
 
     def deliver_fuel(self, tank_station):
+
         if self.distance_to(tank_station) < 1:
+            if tank_station.x == 0 and tank_station.y == 0:
+                self.current_load = 2000
+                logger.info("Refueled at the center.")
+                self.target_station = None
+                return
             fuel_to_give = min(
                 tank_station.capacity - tank_station.current_fuel, self.current_load
             )

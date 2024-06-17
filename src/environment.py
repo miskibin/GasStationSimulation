@@ -1,3 +1,4 @@
+from loguru import logger
 from entity import Entity
 from tank_station import Station
 from vehicle import Tanker, Vehicle
@@ -35,10 +36,9 @@ class Environment:
 
     def update(self):
         if self.tanker.needs_refuel():
-            self.tanker.move_to(self.refuel_center)
-            if self.tanker.distance_to(self.refuel_center) < 1:
-                self.tanker.load_fuel(self.tanker.capacity - self.tanker.current_load)
-        elif self.tanker.target_station:
+            logger.info("Tanker needs refuel.")
+            self.tanker.target_station = self.refuel_center
+        if self.tanker.target_station:
             self.tanker.move_to(self.tanker.target_station)
             self.tanker.deliver_fuel(self.tanker.target_station)
         for station in self.stations:
@@ -90,6 +90,7 @@ class Environment:
                     capacity=station.capacity,
                     current_fuel=station.current_fuel,
                     is_refueling_car=station.is_refueling_car,
+                    loss=station.loss,
                 )
                 for station in self.stations
             ],

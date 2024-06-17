@@ -16,3 +16,8 @@ class Entity:
 
     def __repr__(self):
         return f"{self.name}"
+
+    def __eq__(self, value: object) -> bool:
+        if not isinstance(value, Entity):
+            return False
+        return self.x == value.x and self.y == value.y

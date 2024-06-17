@@ -12,6 +12,7 @@ class Station(Entity):
         self.fuel_alert_level = capacity / 5
         self.vehicles = []
         self.is_refueling_car = False
+        self.loss = 0
         self.environment = (
             None  # This will be set when the station is registered with the environment
         )
@@ -41,3 +42,6 @@ class Station(Entity):
 
             if vehicle.fuel_need <= 0:  # Vehicle is fully refueled
                 self.vehicles.pop(0)  # Remove vehicle from queue
+
+        elif self.vehicles and self.current_fuel <= 0:
+            self.loss += 1

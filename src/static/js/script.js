@@ -34,6 +34,13 @@ function fetchStep() {
             updateStations(data.stations);
             updateTanker(data.tanker);
             updateMap(data);
+
+            // Extract losses from stations and update total loss
+            let totalLoss = 0;
+            let lossPerStation = data.stations.map(station => {
+                return station.loss;
+            });
+            updateLoss(lossPerStation);
         },
         error: function () {
             alert('Error fetching data.');
@@ -41,7 +48,6 @@ function fetchStep() {
         }
     });
 }
-
 function updateTanker(tanker) {
     let loadPercentage = (tanker.current_load / tanker.capacity) * 100;
 
@@ -66,7 +72,6 @@ function updateStations(stations) {
     controlContainer.empty();
     let stationsContainer = $('#stations-container');
     stationsContainer.empty();
-
     stations.forEach(function (station) {
         let fuelPercentage = (station.current_fuel / station.capacity) * 100;
         let refuelingBadge = station.is_refueling_car ? '<span class="badge text-primary mx-2 my-0 px-2 py-0">Currently Refueling Car</span>' : '';
@@ -83,24 +88,31 @@ function updateStations(stations) {
         </div>`;
         stationsContainer.append(stationInfo);
         let controlButton = $(`<button class="btn btn-primary m-2" data-destination="${station.x},${station.y}">Go to Station at (${station.x}, ${station.y})</button>`);
-        controlButton.click(function () {
-            let destination = $(this).data('destination');
-            $.ajax({
-                url: `/set_tanker_destination/${destination}`,
-                method: 'GET',
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function () {
-                    alert('Error setting destination.');
-                }
-            });
-        });
+        controlButton.click(createDestinationSetter());
         controlContainer.append(controlButton);
 
     });
+    let btn = $(`<button class="btn btn-info m-2" data-destination="0,0">Go to Refuel center </button>`);
+    btn.click(createDestinationSetter());
+    controlContainer.append(btn);
 }
 
+
+function createDestinationSetter() {
+    return function () {
+        let destination = $(this).data('destination');
+        $.ajax({
+            url: `/set_tanker_destination/${destination}`,
+            method: 'GET',
+            success: function (response) {
+                console.log(response);
+            },
+            error: function () {
+                alert('Error setting destination.');
+            }
+        });
+    };
+}
 
 function updateMap(data) {
     var ctx = document.getElementById('map').getContext('2d');

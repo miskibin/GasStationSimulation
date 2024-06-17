@@ -51,6 +51,9 @@ def set_tanker_destination(destination):
     x, y = destination.split(",")
     # it is always existing station
     station = None
+    if float(x) == 0 and float(y) == 0:
+        logger.warning(f"Setting refuel center as destination")
+        station = ENVIRONMENT.refuel_center
     for s in ENVIRONMENT.stations:
         if math.isclose(s.x, float(x), rel_tol=1e-5) and math.isclose(
             s.y, float(y), rel_tol=1e-5

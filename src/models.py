@@ -8,6 +8,7 @@ class StationModel(BaseModel):
     capacity: int
     current_fuel: int
     is_refueling_car: bool = False
+    loss: float = 0
 
 
 class TankerModel(BaseModel):
