@@ -136,7 +136,7 @@ function updateMap(data) {
             const image = station.is_refueling_car ? stationCar : stationImage;
     
             ctx.drawImage(image, (station.x * scale) + 400, 300 - (station.y * scale), 40, 40);
-            ctx.fillText("Station " + (index + 1), (station.x * scale) + 400, 300 - (station.y * scale) - 10);
+            ctx.fillText(`Station ${station.x} ${station.y}` , (station.x * scale) + 400, 300 - (station.y * scale) - 10);
         });
     };
 

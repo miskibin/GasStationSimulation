@@ -10,6 +10,7 @@ class Tanker(Entity):
         self.capacity = capacity
         self.current_load = 2000  # Initial load at full capacity for simplicity
         self.target_station = None
+        self.cost_per_move = 2
 
     def load_fuel(self, amount):
         self.current_load += amount
@@ -44,6 +45,7 @@ class Tanker(Entity):
             dx, dy = destination.x - self.x, destination.y - self.y
             distance = np.sqrt(dx**2 + dy**2)
             if distance > 0:
+                self.current_load -= self.cost_per_move
                 self.x += step_size * dx / distance
                 self.y += step_size * dy / distance
             self.logger.info(f"Moved to ({self.x:.2f}, {self.y:.2f})")

@@ -1,52 +1,52 @@
-### Gas Station Simulator
+### Symulator Stacji Paliw
 
+### Formalny opis symulacji tankowania na stacji paliw
 
-### Formal Description of the Gas Station Refueling Simulation
+**Przegląd:**
 
-**Overview:**
+Symulacja tankowania na stacji paliw modeluje dynamiczny system obejmujący wiele stacji paliw, centralne centrum tankowania oraz cysternę zarządzającą dystrybucją paliwa. Symulacja ma na celu optymalizację logistyki paliwowej poprzez zapewnienie, że każda stacja utrzymuje odpowiedni poziom paliwa w celu efektywnej obsługi przyjeżdżających pojazdów, minimalizując jednocześnie straty związane z brakiem paliwa na stacjach.
 
-The gas station refueling simulation models a dynamic system comprising multiple fuel stations, a central refueling center, and a tanker that manages fuel distribution. The simulation aims to optimize fuel logistics by ensuring that each station maintains sufficient fuel levels to serve incoming vehicles efficiently while minimizing the tanker's travel and operational costs.
+**Komponenty Symulacji:**
 
-**Components of the Simulation:**
+1. **Stacje Paliw:**
+   - Każda stacja charakteryzuje się swoimi współrzędnymi geograficznymi i określoną pojemnością paliwa.
+   - Stacje mają kolejkę pojazdów, z których każdy wymaga określonej ilości paliwa.
+   - Stacje monitorują swoje poziomy paliwa i wysyłają prośby o tankowanie do cysterny, gdy poziom paliwa spadnie poniżej określonego progu.
 
-1. **Fuel Stations:**
-   - Each station is characterized by its geographical coordinates and a specified fuel capacity.
-   - Stations have a queue of vehicles, each requiring a certain amount of fuel.
-   - Stations monitor their fuel levels and request refueling from the tanker when the fuel level drops below a specified threshold.
+2. **Cysterna:**
+   - Zadaniem cysterny jest tankowanie stacji z centralnego centrum tankowania.
+   - Ma ograniczoną pojemność paliwa i musi wrócić do centrum tankowania, aby uzupełnić swoje zapasy paliwa, szczególnie gdy jej ładunek spadnie poniżej 20% swojej pojemności.
+   - Cysterna podąża za wyznaczoną trasą, aby efektywnie dostarczać paliwo do stacji, które tego potrzebują. Może obsługiwać tylko jedną stację na raz i ignoruje nowe żądania w trakcie podróży.
 
-2. **Tanker:**
-   - The tanker is tasked with refueling stations from a central refuel center.
-   - It has a finite fuel capacity and must return to the refuel center to replenish its own fuel supply, especially when its load falls below 20% of its capacity.
-   - The tanker follows a designated route to deliver fuel efficiently to the stations in need. It can service only one station at a time and will ignore new requests while en route.
+3. **Centrum Tankowania:**
+   - Położone centralnie w obszarze symulacji, centrum tankowania utrzymuje nieskończone zapasy paliwa.
+   - Służy jako główne źródło, z którego cysterna uzupełnia swój ładunek paliwa.
 
-3. **Refuel Center:**
-   - Located centrally within the simulation area, the refuel center maintains an infinite supply of fuel.
-   - It serves as the primary source from which the tanker refills its fuel load.
+**Dynamika Operacyjna:**
 
-**Operational Dynamics:**
+- Symulacja postępuje w dyskretnych krokach. Każdy krok obejmuje ruch cysterny w kierunku celu, dostarczanie paliwa lub powrót do centrum tankowania w celu tankowania.
+- Stacje paliw ciągle przetwarzają swoje kolejki pojazdów, dostarczając paliwo pojazdom w zależności od dostępności i priorytetu kolejki.
+- Po osiągnięciu krytycznych poziomów paliwa, stacje wysyłają żądanie tankowania do cysterny. Jeśli cysterna jest dostępna (nie obsługuje innej stacji lub nie jest w trasie), ustawi żądającą stację jako swój następny cel.
+- Jeśli ładunek paliwa cysterny jest krytycznie niski, priorytetem jest powrót do centrum tankowania zamiast odpowiadania na żądania stacji.
 
-- The simulation progresses in discrete steps. Each step involves the tanker moving towards its target, delivering fuel, or returning to the refuel center for refueling.
-- Fuel stations process their vehicle queues continuously, providing fuel to vehicles based on availability and queue priority.
-- Upon reaching critical fuel levels, stations send a refueling request to the tanker. If the tanker is available (not servicing another station or en route), it will set the requesting station as its next target.
-- If the tanker’s fuel load is critically low, it prioritizes returning to the refuel center over responding to station requests.
+**Cel:**
 
-**Objective:**
+Głównym celem symulacji jest efektywne zarządzanie logistyką paliwową. Obejmuje to:
+- Minimalizację czasu oczekiwania pojazdów na stacjach paliw.
+- Redukcję strat związanych z brakiem paliwa na stacjach, co pozwala na ciągłość usług.
+- Zapewnienie, że żadna stacja nie wyczerpie paliwa, co mogłoby zakłócić obsługę i wpłynąć na zadowolenie klientów.
 
-The primary objective of the simulation is to manage fuel logistics efficiently. This includes:
-- Minimizing the waiting time for vehicles at fuel stations.
-- Reducing the travel distance and time of the tanker, thus saving on fuel costs and improving service efficiency.
-- Ensuring that no station runs out of fuel, which could disrupt service and affect customer satisfaction.
+**Metryki Oceny:**
 
-**Metrics for Evaluation:**
+- Średni czas oczekiwania na pojazd na wszystkich stacjach.
+- Łączna ilość dostarczonego paliwa przez cysternę w porównaniu z ilością paliwa zu
 
-- Average waiting time per vehicle across all stations.
-- Total fuel delivered by the tanker versus the fuel consumed in travel.
-and return trips to the refuel center.
-- Frequency of stations running out of fuel.
+żytego na podróże i powroty do centrum tankowania.
+- Częstotliwość wyczerpywania się paliwa na stacjach.
 
-This simulation provides valuable insights into the logistics of fuel management in a controlled environment, allowing for strategic planning and operational adjustments to enhance real-world fuel distribution networks.
+Ta symulacja dostarcza cennych wglądów w logistykę zarządzania paliwem w kontrolowanym środowisku, umożliwiając strategiczne planowanie i operacyjne dostosowania w celu zwiększenia efektywności rzeczywistych sieci dystrybucji paliw.
 
-## Architecture
+## Architektura
 
 ```mermaid
 classDiagram
@@ -72,7 +72,7 @@ classDiagram
     +fuel_need: int
     +refuel(amount: int)
   }
-  class Tanker {
+  class Cysterna {
     +capacity: int
     +current_load: int
     +target_station: Station
@@ -83,7 +83,7 @@ classDiagram
   }
   class Environment {
     +stations: list[Station]
-    +tanker: Tanker
+    +cysterna: Cysterna
     +refuel_center: Entity
     +register_station(tank_station: Station)
     +notify(station: Station)
@@ -93,11 +93,44 @@ classDiagram
     +state_as_model(): EnvironmentModel
   }
   Entity <|-- Station
-  Entity <|-- Tanker
+  Entity <|-- Cysterna
   Environment o-- Station
-  Environment o-- Tanker
+  Environment o-- Cysterna
   Station o-- Vehicle
-  Tanker o-- Station
+  Cysterna o-- Station
 ```
 ![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/15ec58e3-0481-416d-b5a3-2c11e524a689)
+
+
+
+Aby lepiej sformalizować symulację stacji paliw, możemy wprowadzić kilka matematycznych modeli, które będą opisywać zachowanie poszczególnych komponentów symulacji oraz ich interakcje. Oto propozycja wzorów i modeli, które mogą być użyteczne:
+
+### Model Matematyczny Symulacji Stacji Paliw
+
+1. **Model Ruchu Cysterny:**
+   - Prędkość przemieszczania się cysterny $v$ oraz odległość $d$ między cysterną a stacją są kluczowe dla obliczenia czasu podróży $t$, który jest potrzebny, aby dotrzeć do stacji.
+   $$ 
+   t = \frac{d}{v}
+   $$ 
+   gdzie $d$ jest obliczane jako odległość euklidesowa między cysterną a stacją:
+   $$ 
+   d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
+   $$ 
+   gdzie $(x_1, y_1)$ to współrzędne cysterny, a $(x_2, y_2)$ to współrzędne stacji.
+
+2. **Model Zużycia Paliwa przez Cysternę:**
+   - Zużycie paliwa przez cysternę jest funkcją odległości $d$ i stałej zużycia paliwa $k$:
+   $$ 
+   P = k \cdot d
+   $$ 
+   gdzie $k$ jest stałą zużycia paliwa na jednostkę odległości.
+
+3. **Model Procesu Tankowania na Stacji:**
+   - Gdy cysterna dotrze na stację, ilość dostarczonego paliwa $f_d$ jest ograniczona przez ilość paliwa w cysternie $f_c$ oraz zapotrzebowanie stacji $f_s$:
+   $$ 
+   f_d = \min(f_c, f_s)
+   $$ 
+   gdzie $f_s$ to zapotrzebowanie stacji na paliwo, które jest różnicą między pojemnością stacji a aktualnym poziomem paliwa.
+
+
 
