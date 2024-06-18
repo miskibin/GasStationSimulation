@@ -1,3 +1,4 @@
+from pathlib import Path
 from loguru import logger
 from entity import Entity
 from tank_station import Station
@@ -14,6 +15,15 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 import networkx as nx
 from models import EnvironmentModel, RefuelCenterModel, StationModel, TankerModel
+
+current_dir = Path(__file__).parent
+logs_dir = current_dir / "logs"
+logs_dir.mkdir(exist_ok=True)
+log_file = logs_dir / "env.log"
+
+logger.add(log_file, rotation="500 MB", encoding='utf8', retention="10 days", level="DEBUG")
+
+
 
 
 class Environment:

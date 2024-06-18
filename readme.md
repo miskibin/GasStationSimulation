@@ -1,4 +1,4 @@
-### Symulator Stacji Paliw
+# Symulator Stacji Paliw
 
 ### Formalny opis symulacji tankowania na stacji paliw
 

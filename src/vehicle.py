@@ -1,6 +1,16 @@
+from pathlib import Path
 from entity import Entity
 import numpy as np
 from loguru import logger
+
+
+current_dir = Path(__file__).parent
+logs_dir = current_dir / "logs"
+logs_dir.mkdir(exist_ok=True)
+log_file = logs_dir / "tanker.log"
+
+logger.add(log_file, rotation="500 MB", encoding='utf8', retention="10 days", level="DEBUG")
+
 
 
 class Tanker(Entity):
@@ -30,8 +40,8 @@ class Tanker(Entity):
                 self.target_station = None
                 return
             fuel_to_give = min(
-                tank_station.capacity - tank_station.current_fuel, self.current_load
-            )
+                tank_station.capacity - tank_station.current_fuel , self.current_load
+            )- 20
             tank_station.add_fuel(fuel_to_give)
             self.current_load -= fuel_to_give
             self.target_station = None
@@ -46,6 +56,7 @@ class Tanker(Entity):
             distance = np.sqrt(dx**2 + dy**2)
             if distance > 0:
                 self.current_load -= self.cost_per_move
+                self.current_load = max(0, self.current_load)
                 self.x += step_size * dx / distance
                 self.y += step_size * dy / distance
             self.logger.info(f"Moved to ({self.x:.2f}, {self.y:.2f})")

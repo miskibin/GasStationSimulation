@@ -75,8 +75,9 @@ function updateStations(stations) {
     stationsContainer.empty();
     stations.forEach(station => {
         const fuelPercentage = (station.current_fuel / station.capacity) * 100;
-        const refuelingBadge = station.is_refueling_car ? '<span class="badge text-primary mx-2 my-0 px-2 py-0">Refueling Car</span>' : '';
-
+        let refuelingBadge = station.is_refueling_car ? '<span class="badge text-primary mx-2 my-0 px-2 py-0">Refueling Car</span>' : '';
+        if(station.current_fuel <= 0 )refuelingBadge = '<span class="badge text-danger mx-2 my-0 px-2 py-0">EMPTY ! ! !</span>'   
+        
         const stationInfo = `
         <div class="card mb-2">
             <div class="card-body">
@@ -115,7 +116,7 @@ function updateMap(data) {
     const ctx = document.getElementById('map').getContext('2d');
     ctx.clearRect(0, 0, 800, 600); // Clear previous drawing
 
-    const scale = 10; // Adjust this value to change the scale
+    const scale = 12; // Adjust this value to change the scale
 
     // Load images
     const refuelCenterImage = new Image();

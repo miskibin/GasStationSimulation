@@ -1,6 +1,15 @@
+from pathlib import Path
 import numpy as np
 from entity import Entity
 from loguru import logger
+
+current_dir = Path(__file__).parent
+logs_dir = current_dir / "logs"
+logs_dir.mkdir(exist_ok=True)
+log_file = logs_dir / "station.log"
+
+logger.add(log_file, rotation="500 MB", encoding='utf8', retention="10 days", level="DEBUG")
+
 
 
 class Station(Entity):

@@ -17,6 +17,16 @@ from models import (
 from pathlib import Path
 import math
 
+current_dir = Path(__file__).parent
+logs_dir = current_dir / "logs"
+logs_dir.mkdir(exist_ok=True)
+log_file = logs_dir / "server.log"
+
+logger.add(log_file, rotation="500 MB", encoding='utf8', retention="10 days", level="DEBUG")
+
+
+
+
 app = FastAPI()
 
 current_dir = Path(__file__).parent
@@ -29,13 +39,19 @@ templates = Jinja2Templates(directory=current_dir / "templates")
 def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/start")
+def root(request: Request):
+    return templates.TemplateResponse("start.html", {"request": request})
+
 
 ENVIRONMENT = Environment()
 ENVIRONMENT.register_station(Station(10, 10, 800, 15))
 ENVIRONMENT.register_station(Station(-10, -10, 700, 24))
 ENVIRONMENT.register_station(Station(20, -20, 900, 17))
-# ENVIRONMENT.register_station(Station(13, -14, 900, 17))
-# ENVIRONMENT.register_station(Station(-15, 10, 500, 17))
+ENVIRONMENT.register_station(Station(13, -14, 900, 17))
+ENVIRONMENT.register_station(Station(-15, 10, 500, 17))
+ENVIRONMENT.register_station(Station(-11, 10, 500, 17))
+ENVIRONMENT.register_station(Station(-0, 10, 500, 17))
 
 # Add vehicles
 for station in ENVIRONMENT.stations:
