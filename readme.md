@@ -132,5 +132,9 @@ Aby lepiej sformalizować symulację stacji paliw, możemy wprowadzić kilka mat
    $$ 
    gdzie $f_s$ to zapotrzebowanie stacji na paliwo, które jest różnicą między pojemnością stacji a aktualnym poziomem paliwa.
 
+![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/76eb2795-49ea-4e5e-8662-1553436e2e39)
+
+
+![image](https://github.com/michalskibinski109/GasStationSimulation/assets/77834536/4fcdad27-5390-4c60-a114-d5d5e29efbe7)
 
 
