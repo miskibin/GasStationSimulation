@@ -1,57 +1,58 @@
-$(document).ready(function () {
-    $('#step-btn').click(function () {
-        fetchStep();
-    });
+var isSimulationRunning = true; // Control variable
+const stationImage = new Image();
+stationImage.src = 'static/image/station.png';
+$(document).ready(() => {
+    $('#step-btn').click(fetchStep);
 
-
-    $('#run-simulation-btn').click(function () {
-        if (isSimulationRunning) {
-            $(this).text('Run Simulation');
-            isSimulationRunning = false;
-        } else {
-            $(this).text('Stop Simulation');
-            isSimulationRunning = true;
-            let simulationTime = $('#simulation-time').val(); // Fetch simulation time from input field
-            let intervalId = setInterval(() => {
-                if (!isSimulationRunning) {
-                    clearInterval(intervalId);
-                } else {
-                    fetchStep();
-                }
-            }, simulationTime); // Use simulation time for interval
-        }
-    });
+    $('#run-simulation-btn').click(toggleSimulation);
 });
-let isSimulationRunning = true; // Control variable
 
-
+function toggleSimulation() {
+    if (isSimulationRunning) {
+        $(this).text('Run Simulation');
+        isSimulationRunning = false;
+    } else {
+        $(this).text('Stop Simulation');
+        isSimulationRunning = true;
+        let simulationTime = $('#simulation-time').val(); // Fetch simulation time from input field
+        let intervalId = setInterval(() => {
+            if (!isSimulationRunning) {
+                clearInterval(intervalId);
+            } else {
+                fetchStep();
+            }
+        }, simulationTime); // Use simulation time for interval
+    }
+}
 
 function fetchStep() {
     $.ajax({
         url: '/step', // Modify with your actual endpoint
         method: 'GET',
-        success: function (data) {
-            updateStations(data.stations);
-            updateTanker(data.tanker);
-            updateMap(data);
-
-            // Extract losses from stations and update total loss
-            let totalLoss = 0;
-            let lossPerStation = data.stations.map(station => {
-                return station.loss;
-            });
-            updateLoss(lossPerStation);
-        },
-        error: function () {
-            alert('Error fetching data.');
-            isSimulationRunning = false; // Stop simulation on error
-        }
+        success: handleFetchSuccess,
+        error: handleFetchError
     });
 }
-function updateTanker(tanker) {
-    let loadPercentage = (tanker.current_load / tanker.capacity) * 100;
 
-    let tankerInfo = `<div class="card mb-2">
+function handleFetchSuccess(data) {
+    updateStations(data.stations);
+    updateTanker(data.tanker);
+    updateMap(data);
+
+    // Extract losses from stations and update total loss
+    const lossPerStation = data.stations.map(station => station.loss);
+    updateLoss(lossPerStation);
+}
+
+function handleFetchError() {
+    alert('Error fetching data.');
+    isSimulationRunning = false; // Stop simulation on error
+}
+function updateTanker(tanker) {
+    const loadPercentage = (tanker.current_load / tanker.capacity) * 100;
+
+    const tankerInfo = `
+    <div class="card mb-2">
         <div class="card-body">
             <h5 class="card-title">Tanker Info</h5>
             <p class="card-text">Position: (${tanker.x.toFixed(2)}, ${tanker.y.toFixed(2)})</p>
@@ -68,15 +69,16 @@ function updateTanker(tanker) {
 }
 
 function updateStations(stations) {
-    let controlContainer = $('#tanker-control-container');
+    const controlContainer = $('#tanker-control-container');
     controlContainer.empty();
-    let stationsContainer = $('#stations-container');
+    const stationsContainer = $('#stations-container');
     stationsContainer.empty();
-    stations.forEach(function (station) {
-        let fuelPercentage = (station.current_fuel / station.capacity) * 100;
-        let refuelingBadge = station.is_refueling_car ? '<span class="badge text-primary mx-2 my-0 px-2 py-0">Currently Refueling Car</span>' : '';
+    stations.forEach(station => {
+        const fuelPercentage = (station.current_fuel / station.capacity) * 100;
+        const refuelingBadge = station.is_refueling_car ? '<span class="badge text-primary mx-2 my-0 px-2 py-0">Refueling Car</span>' : '';
 
-        let stationInfo = `<div class="card mb-2">
+        const stationInfo = `
+        <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">Station at (${station.x}, ${station.y}) ${refuelingBadge}</h5>
                 <p class="card-text">Capacity: ${station.capacity} liters</p>
@@ -87,12 +89,12 @@ function updateStations(stations) {
             </div>
         </div>`;
         stationsContainer.append(stationInfo);
-        let controlButton = $(`<button class="btn btn-primary m-2" data-destination="${station.x},${station.y}">Go to Station at (${station.x}, ${station.y})</button>`);
+        const controlButton = $(`<button class="btn btn-primary m-2" data-destination="${station.x},${station.y}">Go to Station(${station.x}, ${station.y})</button>`);
         controlButton.click(createDestinationSetter());
         controlContainer.append(controlButton);
 
     });
-    let btn = $(`<button class="btn btn-info m-2" data-destination="0,0">Go to Refuel center </button>`);
+    const btn = $(`<button class="btn btn-info m-2" data-destination="0,0">Go to Refuel center </button>`);
     btn.click(createDestinationSetter());
     controlContainer.append(btn);
 }
@@ -100,42 +102,46 @@ function updateStations(stations) {
 
 function createDestinationSetter() {
     return function () {
-        let destination = $(this).data('destination');
+        const destination = $(this).data('destination');
         $.ajax({
             url: `/set_tanker_destination/${destination}`,
             method: 'GET',
-            success: function (response) {
-                console.log(response);
-            },
-            error: function () {
-                alert('Error setting destination.');
-            }
+            success: response => console.log(response),
+            error: () => alert('Error setting destination.')
         });
     };
 }
-
 function updateMap(data) {
-    var ctx = document.getElementById('map').getContext('2d');
+    const ctx = document.getElementById('map').getContext('2d');
     ctx.clearRect(0, 0, 800, 600); // Clear previous drawing
 
-    var scale = 10; // Adjust this value to change the scale
+    const scale = 10; // Adjust this value to change the scale
 
-    // Draw refuel center
-    ctx.fillStyle = 'green';
-    ctx.fillRect((data.refuel_center.x * scale) + 400, 300 - (data.refuel_center.y * scale), 22, 22);
-    ctx.fillText("Refuel Center", (data.refuel_center.x * scale) + 400, 300 - (data.refuel_center.y * scale) - 10);
+    // Load images
+    const refuelCenterImage = new Image();
+    refuelCenterImage.src = 'static/image/refuel_center.jpg'; // Ensure this path is correct
+    const stationImage = new Image();
+    stationImage.src = 'static/image/station.png'; // Ensure this path is correct
+    const stationCar = new Image();
+    stationCar.src = 'static/image/station_car.png'; // Ensure this path is correct
+    const tankerImage = new Image();
+    tankerImage.src = 'static/image/tanker.png'; // Ensure this path is correct
+    refuelCenterImage.onload = () => {
+        ctx.drawImage(refuelCenterImage, (data.refuel_center.x * scale) + 400, 300 - (data.refuel_center.y * scale), 50, 50);
+        ctx.fillText("Refuel Center", (data.refuel_center.x * scale) + 400, 300 - (data.refuel_center.y * scale) - 10);
+    };
+    stationImage.onload = stationCar.onload = () => {
+        data.stations.forEach((station, index) => {
+            // Choose the image based on whether the station is refueling a car
+            const image = station.is_refueling_car ? stationCar : stationImage;
+    
+            ctx.drawImage(image, (station.x * scale) + 400, 300 - (station.y * scale), 40, 40);
+            ctx.fillText("Station " + (index + 1), (station.x * scale) + 400, 300 - (station.y * scale) - 10);
+        });
+    };
 
-    // Draw stations
-    data.stations.forEach((station, index) => {
-        ctx.fillStyle = station.current_fuel > 0 ? 'blue' : 'red';
-        ctx.fillRect((station.x * scale) + 400, 300 - (station.y * scale), 20, 20);
-        ctx.fillText("Station " + (index + 1), (station.x * scale) + 400, 300 - (station.y * scale) - 10);
-    });
-
-    // Draw tanker
-    ctx.fillStyle = 'purple';
-    ctx.fillRect((data.tanker.x * scale) + 400, 300 - (data.tanker.y * scale), 22, 22);
-    ctx.fillText("Tanker", (data.tanker.x * scale) + 400, 300 - (data.tanker.y * scale) - 10);
+    tankerImage.onload = () => {
+        ctx.drawImage(tankerImage, (data.tanker.x * scale) + 400, 300 - (data.tanker.y * scale), 40, 40);
+        ctx.fillText("Tanker", (data.tanker.x * scale) + 400, 300 - (data.tanker.y * scale) - 10);
+    };
 }
-
-

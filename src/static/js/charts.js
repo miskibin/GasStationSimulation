@@ -43,22 +43,19 @@ let updateLoss = function (newLossPerStation) {
         totalLossChart.data.datasets[0].data = totalLoss;
         totalLossChart.update();
     }
-
-    // Create or update station loss bar chart
-    // Initialize or update the station loss chart
     if (!stationLossChart) {
+        let lbls = Array.from({ length: lossPerStation.length }, (_, i) => `Station ${i + 1}`)
         let ctx = document.getElementById('stationLossChart').getContext('2d');
         stationLossChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: Array.from({ length: lossPerStation }, (_, i) => `Station ${i + 1}`),
+                labels:lbls,
                 datasets: [{
                     label: 'Loss per Station',
-                    data: lossPerStation, // Directly use the lossPerStation array
+                    data: lossPerStation,
                 }]
             },
             options: {
-                scales: { y: { beginAtZero: true } },
                 plugins: {
                     title: {
                         display: true,
@@ -68,7 +65,6 @@ let updateLoss = function (newLossPerStation) {
             }
         });
     } else {
-        // Update the data for the dataset
         stationLossChart.data.datasets[0].data = lossPerStation;
         stationLossChart.update();
     }
